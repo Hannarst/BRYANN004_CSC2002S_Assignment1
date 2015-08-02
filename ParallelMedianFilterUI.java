@@ -5,7 +5,7 @@ import java.util.Scanner;
 import java.util.Arrays;
 import java.util.concurrent.*;
 
-class MedianFilterThread extends RecursiveTask<float[]>{
+class MedianFilterThread extends RecursiveTask<String>{
   float[] array;
   int filterSize;
   int side;
@@ -23,15 +23,15 @@ class MedianFilterThread extends RecursiveTask<float[]>{
     lo = l;
   }
 
-  protected float[] compute(){
+  protected String compute(){
     if(hi - lo < SEQUENTIAL_CUTOFF) {
-      float[] retArr = new float[size];
+      String retArr = "";
       for (int i=lo; i<hi; i++){
         if (i>=side && i<size-side){
-          retArr[i] = this.median(this.cutArray(i));
+          retArr += (i+1) +" "+ this.median(this.cutArray(i)) + "\n";
         }
         else{
-          retArr[i] = array[i];
+          retArr += (i+1) +" "+ array[i] + "\n";
         }
       }
       return retArr;
@@ -40,17 +40,10 @@ class MedianFilterThread extends RecursiveTask<float[]>{
      MedianFilterThread left = new MedianFilterThread(array, filterSize, lo,(hi+lo)/2);
      MedianFilterThread right= new MedianFilterThread(array, filterSize, (hi+lo)/2,hi);
      left.fork();
-     float[] rightAns = right.compute();
-     float[] leftAns = left.join();
-     float[] ans = new float[hi-lo];
-     return concat(leftAns, rightAns);
+     String rightAns = right.compute();
+     String leftAns = left.join();
+     return leftAns+rightAns;
    }
-  }
-
-  public static float[] concat(float[] first, float[] second) {
-   float[] result = Arrays.copyOf(first, first.length + second.length);
-   System.arraycopy(second, 0, result, first.length, second.length);
-   return result;
   }
 
   private float[] cutArray(int index){
@@ -87,13 +80,11 @@ public class ParallelMedianFilterUI{
     }
     inFile.close();
 
-    float[] outData = fjPool.invoke(new MedianFilterThread(inData, filterSize, 0, lines));
+    String outData = fjPool.invoke(new MedianFilterThread(inData, filterSize, 0, lines));
 
     PrintWriter writer = new PrintWriter(outFile);
     writer.println(lines);
-    for (int i=0; i<lines; i++){
-      writer.println(i+1 + " " + outData[i]);
-    }
+    writer.print(outData);
     writer.close();
 
 
