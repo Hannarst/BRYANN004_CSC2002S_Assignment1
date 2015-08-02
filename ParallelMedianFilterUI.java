@@ -5,6 +5,34 @@ import java.util.Scanner;
 import java.util.Arrays;
 import java.util.concurrent.*;
 
+public class ParallelMedianFilterUI{
+
+  static final ForkJoinPool fjPool = new ForkJoinPool();
+
+  public static void main(String[] args) throws FileNotFoundException{
+    String dataFile = args[0];
+    int filterSize = Integer.parseInt(args[1]);
+    String outFile = args[2];
+    float[] inData;
+
+    Scanner inFile = new Scanner(new FileReader(dataFile));
+    int lines = inFile.nextInt();
+    inData = new float[lines];
+    inFile.nextLine();
+    for (int i=0; i<lines; i++){
+      inData[i] = Float.parseFloat(inFile.nextLine().split(" ")[1]);
+    }
+    inFile.close();
+
+    String outData = fjPool.invoke(new MedianFilterThread(inData, filterSize, 0, lines));
+
+    PrintWriter writer = new PrintWriter(outFile);
+    writer.println(lines);
+    writer.print(outData);
+    writer.close();
+  }
+}
+
 class MedianFilterThread extends RecursiveTask<String>{
   float[] array;
   int filterSize;
@@ -12,7 +40,7 @@ class MedianFilterThread extends RecursiveTask<String>{
   int size;
   int lo;
   int hi;
-  int SEQUENTIAL_CUTOFF = 500;
+  int SEQUENTIAL_CUTOFF = 1000;
 
   public MedianFilterThread(float[] array, int filterSize, int l, int h){
     this.array = array;
@@ -58,35 +86,5 @@ class MedianFilterThread extends RecursiveTask<String>{
   private static float median(float[] array1){
     Arrays.sort(array1);
     return array1[(array1.length-1)/2];
-  }
-}
-
-public class ParallelMedianFilterUI{
-
-  static final ForkJoinPool fjPool = new ForkJoinPool();
-
-  public static void main(String[] args) throws FileNotFoundException{
-    String dataFile = args[0];
-    int filterSize = Integer.parseInt(args[1]);
-    String outFile = args[2];
-    float[] inData;
-
-    Scanner inFile = new Scanner(new FileReader(dataFile));
-    int lines = inFile.nextInt();
-    inData = new float[lines];
-    inFile.nextLine();
-    for (int i=0; i<lines; i++){
-      inData[i] = Float.parseFloat(inFile.nextLine().split(" ")[1]);
-    }
-    inFile.close();
-
-    String outData = fjPool.invoke(new MedianFilterThread(inData, filterSize, 0, lines));
-
-    PrintWriter writer = new PrintWriter(outFile);
-    writer.println(lines);
-    writer.print(outData);
-    writer.close();
-
-
   }
 }

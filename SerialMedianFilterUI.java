@@ -29,8 +29,7 @@ public class SerialMedianFilterUI{
       writer.println(i+1 + " " + outData[i]);
     }
     writer.close();
-
-
+    
   }
 }
 class MedianFilter{
