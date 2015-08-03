@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 public class SerialVParallelTest{
 //static final String[] files = {"inp1.txt", "inp1B.txt", "inp2.txt", "inp2B.txt", "inp3.txt", "inp3B.txt", "inp4.txt"};
 	static final String[] files = {"inp1.txt"};
-	static final String[] filters = {"3", "29", "51", "201", "499", "999"};
+	static final String[] filters = {"3", "5", "7", "9", "11", "19", "21"};
 	static final int PARALLEL_ITERATIONS = 20;
 	static final int SERIAL_ITERATIONS = 20;
 
