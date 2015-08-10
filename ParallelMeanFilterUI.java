@@ -5,7 +5,7 @@ import java.util.Scanner;
 import java.util.Arrays;
 import java.util.concurrent.*;
 
-public class ParallelMedianFilterUI{
+public class ParallelMeanFilterUI{
 
   static final ForkJoinPool fjPool = new ForkJoinPool();
 
@@ -25,7 +25,7 @@ public class ParallelMedianFilterUI{
     inFile.close();
 
 	  float[] retArr = new float[lines];
-	  MedianFilterThread mainThread = new MedianFilterThread(inData, retArr, filterSize, 0, lines);
+	  MeanFilterThread mainThread = new MeanFilterThread(inData, retArr, filterSize, 0, lines);
     fjPool.invoke(mainThread);
 
     float[] outData = mainThread.retArr;
@@ -39,7 +39,7 @@ public class ParallelMedianFilterUI{
   }
 }
 
-class MedianFilterThread extends RecursiveAction{
+class MeanFilterThread extends RecursiveAction{
   float[] array;
   int filterSize;
   int side;
@@ -49,7 +49,7 @@ class MedianFilterThread extends RecursiveAction{
   static int SEQUENTIAL_CUTOFF = 25;
   public static float[] retArr;
 
-  public MedianFilterThread(float[] array, float[] retArr, int filterSize, int l, int h){
+  public MeanFilterThread(float[] array, float[] retArr, int filterSize, int l, int h){
     this.array = array;
     this.filterSize = filterSize;
     this.side = (filterSize-1)/2;
@@ -63,7 +63,7 @@ class MedianFilterThread extends RecursiveAction{
     if(hi - lo < SEQUENTIAL_CUTOFF) {
   		for (int i=lo; i<hi; i++){
   			if (i>=side && i<size-side){
-  				retArr[i] = this.median(this.cutArray(i));
+  				retArr[i] = this.Mean(this.cutArray(i));
   			}
   			else{
   				retArr[i] = array[i];
@@ -71,8 +71,8 @@ class MedianFilterThread extends RecursiveAction{
   		}
     }
     else {
-     MedianFilterThread left = new MedianFilterThread(array, retArr, filterSize, lo,(hi+lo)/2);
-     MedianFilterThread right= new MedianFilterThread(array, retArr, filterSize, (hi+lo)/2,hi);
+     MeanFilterThread left = new MeanFilterThread(array, retArr, filterSize, lo,(hi+lo)/2);
+     MeanFilterThread right= new MeanFilterThread(array, retArr, filterSize, (hi+lo)/2,hi);
      left.fork();
      right.compute();
      left.join();
@@ -88,8 +88,9 @@ class MedianFilterThread extends RecursiveAction{
     }
     return retArra;
   }
-  private static float median(float[] array1){
-    Arrays.sort(array1);
-    return array1[(array1.length-1)/2];
+  private static float Mean(float[] array1){
+    float sum = 0;
+    for (float d : array1) sum += d;
+    return sum/array1.length;
   }
 }

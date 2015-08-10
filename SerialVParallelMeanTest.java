@@ -1,8 +1,8 @@
 import java.io.FileNotFoundException;
 
-public class SerialVParallelTest{
-//static final String[] files = {"inp1.txt", "inp1B.txt", "inp2.txt", "inp2B.txt", "inp3.txt", "inp3B.txt", "inp4.txt"};
-	static final String[] files = {"inp3.txt"};
+public class SerialVParallelMeanTest{
+  static final String[] files = {"inp1.txt", "inp1B.txt", "inp2.txt", "inp2B.txt", "inp3.txt", "inp3B.txt", "inp4.txt"};
+	//static final String[] files = {"inp1.txt"};
 	static final String[] filters = {"3", "5", "7", "9", "11", "13", "15", "17", "19", "21"};
 	static final int ITERATIONS = 50;
 
@@ -26,12 +26,12 @@ public class SerialVParallelTest{
 				for (int i=0; i<ITERATIONS; i++){
 					long start = System.currentTimeMillis();
 					String[] param = {file, filter, "out.txt"};
-					SerialMedianFilterUI.main(param);
+					SerialMeanFilterUI.main(param);
 					long serialTime = System.currentTimeMillis()-start;
 					serialTotal += serialTime;
 
 					start = System.currentTimeMillis();
-					ParallelMedianFilterUI.main(param);
+					ParallelMeanFilterUI.main(param);
 					long parallelTime = System.currentTimeMillis()-start;
 					parallelTotal += parallelTime;
 				}
